@@ -298,7 +298,7 @@ def render_file(path: Path, r: Renderer, frames: int, gif: bool) -> list[Path]:
             gframes = [r.frame(p, nrm, c, gradius) for (p, nrm), c in zip(gposes, gcenters)]
             gframes[0].save(out_dir / f"{safe(name)}.gif", save_all=True, append_images=gframes[1:],
                             duration=int(1000 / 15), loop=0)
-        print(f"  {out.relative_to(ROOT)}")
+        print(f"  {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
     return written
 
 
@@ -348,7 +348,7 @@ def main() -> None:
             y += i.height
         out = folder / "overview.png"
         overview.save(out)
-        print(f"  {out.relative_to(ROOT)}")
+        print(f"  {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
 
 
 if __name__ == "__main__":

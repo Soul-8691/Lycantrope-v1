@@ -557,7 +557,7 @@
         },
         "death": {
           "file": "DRM-37/tripo/v2/rig/animated.glb",
-          "clip": "defeat_02"
+          "clip": "defeat_03"
         },
         "cast": {
           "file": "DRM-37/tripo/v2/rig/animated.glb",
@@ -641,7 +641,7 @@
         },
         "death": {
           "file": "DRM-37/tripo/female/v1/rig/animated.glb",
-          "clip": "defeat_02"
+          "clip": "defeat_03"
         },
         "cast": {
           "file": "DRM-37/tripo/female/v1/rig/animated.glb",
