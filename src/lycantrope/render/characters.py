@@ -714,6 +714,7 @@ class Character:
     jaw_open: float = 0.0                                # 0 shut .. 1 open
     sheathed: bool | None = None                         # Rowan: sword on his back (None for others)
     fighter: object = None                               # stats.Fighter: enemies and Rowan (HP, poise...)
+    night_only: bool = False                             # out only between dusk and dawn (WLD-11)
 
 
 class CharacterSystem:
@@ -765,6 +766,9 @@ class CharacterSystem:
         for c in self.chars:
             if c.brain is not None:
                 c.fighter = enemy_fighter(c.actor.kind, c.t.name or c.actor.kind, self.combat_cfg)
+        self.night = False                       # set each tick by the game from the day clock
+        self.dormant = [c for c in self.chars if c.night_only]   # night groups wait here by day
+        self.chars = [c for c in self.chars if not c.night_only]
         if self.rowan is not None:
             ra = self.rowan.a
             self.spawn_point = (ra.x, ra.z, ra.heading)
@@ -837,6 +841,7 @@ class CharacterSystem:
                 self.dress(ch, random.Random(gi * 1000 + i + 77), g.get("lines"))     # own seed: spawn spots stay put
                 if not vary:
                     self.dress(ch, random.Random(gi * 1000 + i + 77), g.get("lines"))     # own seed: spawn spots stay put
+                ch.night_only = bool(g.get("night", False))
                 if route:
                     brain.set_route(route, start, rng.choice((-1, 1)))
                 elif brain.ai.on_paths:
@@ -1055,9 +1060,44 @@ class CharacterSystem:
         self.rite_cooldown = 0.0
         self.respawn_enemies()
 
+    NIGHT_POP_M = 50.0              # night groups come and go only this far from Rowan
+
+    def night_shift(self) -> None:
+        """WLD-11: night groups come out after dusk and leave at dawn, back at their spawn points. Never in
+        Rowan's face (NIGHT_POP_M), and never mid-fight; the dead stay down until enemies respawn."""
+        if self.rowan is None:
+            return
+        ra = self.rowan.a
+
+        def far(x, z):
+            return math.hypot(x - ra.x, z - ra.z) > self.NIGHT_POP_M
+        changed = False
+        if self.night:
+            for c in list(self.dormant):
+                hx, hz = c.brain.home
+                if c.fighter is not None and c.fighter.alive and far(hx, hz):
+                    self.dormant.remove(c)
+                    a = c.actor
+                    a.x, a.z = hx, hz
+                    a.y = self.world.height_at(hx, hz)
+                    a.state, a.speed, a.vy, a.airborne, a.fall_top = "wander", 0.0, 0.0, False, None
+                    a.play("idle", restart=True)
+                    a.save_prev()
+                    self.chars.append(c)
+                    changed = True
+        else:
+            for c in [c for c in self.chars if c.night_only]:
+                a = c.actor
+                if a.state not in ("chase", "engage", "attack", "cast", "hit") and far(a.x, a.z):
+                    self.chars.remove(c)
+                    self.dormant.append(c)
+                    changed = True
+        if changed:
+            self._cull_rad_n = -1                # roster changed: rebuild the culling radii
+
     def respawn_enemies(self) -> None:
-        """Every enemy back at full health where it started."""
-        for c in self.chars:
+        """Every enemy back at full health where it started (the night groups too, out or not)."""
+        for c in self.chars + self.dormant:
             b = c.brain
             if b is None or c.fighter is None:
                 continue
@@ -1135,6 +1175,7 @@ class CharacterSystem:
     def update(self, inp, cam_yaw: float, dt: float) -> None:
         if self.rowan is None:
             return
+        self.night_shift()
         ra = self.rowan.a
         self.combat.hits = []
         rcf = self.rowan_char.fighter if self.rowan_char is not None else None

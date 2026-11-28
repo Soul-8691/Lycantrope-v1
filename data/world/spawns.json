@@ -5,7 +5,8 @@
     "around there. 'facing' is a compass heading for Rowan (0 = north). 'vary' gives each one a",
     "slightly different height, colouring and walking pace (villagers). 'route' makes it a",
     "traveller: it walks those [east, north] points in turn, there and back (or round, if the",
-    "route ends where it starts), resting at each end."
+    "route ends where it starts), resting at each end. 'night': true keeps a group away by day: it comes out",
+    "after dusk and leaves at dawn (WLD-11), never within 50 m of Rowan or in the middle of a fight."
   ],
   "rowan": {
     "anchor": "Brackenvale Village",
@@ -137,6 +138,8 @@
     {"name": "bandit bruiser, north (Brackenvale)", "kind": "bruiser", "count": 2, "anchor": "Brackenvale Village", "at": [-189, 477], "radius": 5},
     {"name": "battlemage patrol, north-east (Brackenvale)", "kind": "battlemage", "count": 2, "anchor": "Brackenvale Village", "at": [161, 239], "radius": 6},
     {"name": "battlemage patrol, north-east (Brackenvale)", "kind": "battlemage", "count": 2, "anchor": "Brackenvale Village", "at": [452, 421], "radius": 6},
-    {"name": "battlemage patrol, north-east (Brackenvale)", "kind": "battlemage", "count": 2, "anchor": "Brackenvale Village", "at": [395, 289], "radius": 6}
+    {"name": "battlemage patrol, north-east (Brackenvale)", "kind": "battlemage", "count": 2, "anchor": "Brackenvale Village", "at": [395, 289], "radius": 6},
+    {"name": "cultists at Bracken Mere (night)", "kind": "cultist", "count": 2, "anchor": "Brackenvale Village", "at": [-434, 90], "radius": 10, "night": true},
+    {"name": "cultists at Bracken Mere (night)", "kind": "cultist_f", "count": 1, "anchor": "Brackenvale Village", "at": [-434, 90], "radius": 10, "night": true}
   ]
 }

@@ -514,6 +514,7 @@ class App:
             self.ticks += 1
         elif not self.map.open:
             self.fly(dt, keys)
+        self.chars.night = self.day.is_night()           # night groups come out (WLD-11)
         self.chars.update(inp, self.orbit_yaw, dt)
         if self.music is not None:
             self.music.update(dt, self.chars.chased(self.music.cfg.get("combat_range_m", 45.0)), self.music_region())
