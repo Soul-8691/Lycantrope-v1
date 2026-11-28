@@ -71,6 +71,11 @@
       {"item": "trs_10", "chance": 0.25},
       {"item": "leg_10", "chance": 0.25}
     ],
+    "cultist_f": [
+      {"item": "copper", "chance": 0.85, "count": [4, 12]},
+      {"item": "bread", "chance": 0.2},
+      {"item": "apple", "chance": 0.25, "count": [1, 2]}
+    ],
     "cultist": [
       {"item": "copper", "chance": 0.85, "count": [4, 12]},
       {"item": "bread", "chance": 0.2},
